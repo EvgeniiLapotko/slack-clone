@@ -15,7 +15,30 @@ import ArrowMoreIcon from "@material-ui/icons/ExpandMore";
 import AddIcon from "@material-ui/icons/Add";
 import NavbarList from "./NavbarList";
 
+import { collection, getDocs, query } from "firebase/firestore";
+import { db } from "../firebase";
+
+interface IchanelType {
+    chanel: string;
+    id: string;
+}
+
 const Navbar: React.FC = (): React.ReactElement => {
+    const [chanelsList, setChanels] = React.useState<IchanelType[]>([]);
+
+    const fetchChanel = async () => {
+        const querySnapshot = await getDocs(query(collection(db, "/rooms")));
+        const chanels: IchanelType[] = [];
+        querySnapshot.forEach((doc) => {
+            chanels.push({ id: doc.id, chanel: doc.data().name });
+            // console.log(doc.id, " => ", doc.data());
+            setChanels(chanels);
+        });
+    };
+    React.useEffect(() => {
+        fetchChanel();
+    }, []);
+    console.log(chanelsList);
     return (
         <NavbarContainer>
             <NavbarHeader>
@@ -46,7 +69,14 @@ const Navbar: React.FC = (): React.ReactElement => {
                 Icon={AddIcon}
                 addChanelOption
             />
-            <NavbarList title={"Front"} />
+            {chanelsList &&
+                chanelsList.map((item) => (
+                    <NavbarList
+                        key={item.id}
+                        title={item.chanel}
+                        id={item.id}
+                    />
+                ))}
         </NavbarContainer>
     );
 };

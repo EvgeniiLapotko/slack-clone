@@ -2,10 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import { db } from "../firebase";
 import { collection, addDoc } from "firebase/firestore";
+import { useCollection } from "react-firebase-hooks/firestore";
 
 interface INavbarListType {
     title: string;
     Icon?: any;
+    id?: string;
     addChanelOption?: boolean;
 }
 
@@ -13,7 +15,10 @@ const NavbarList: React.FC<INavbarListType> = ({
     title,
     Icon,
     addChanelOption,
+    id,
 }: INavbarListType): React.ReactElement => {
+    const [chanels, loading, error] = useCollection();
+
     const addChanel = async () => {
         const nameChanel = prompt("Введите название канала");
         console.log(nameChanel);
@@ -22,7 +27,7 @@ const NavbarList: React.FC<INavbarListType> = ({
                 const docRef = await addDoc(collection(db, "rooms"), {
                     name: nameChanel,
                 });
-                console.log("Document written ");
+                console.log("Document written " + docRef.id);
             } catch (e) {
                 console.error("Error adding document: ", e);
             }
