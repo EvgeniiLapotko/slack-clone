@@ -17,6 +17,9 @@ import NavbarList from "./NavbarList";
 
 import { collection, getDocs, query } from "firebase/firestore";
 import { db } from "../firebase";
+import { getRoomsAsync } from "../features/appSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../app/store";
 
 interface IchanelType {
     chanel: string;
@@ -25,18 +28,11 @@ interface IchanelType {
 
 const Navbar: React.FC = (): React.ReactElement => {
     const [chanelsList, setChanels] = React.useState<IchanelType[]>([]);
+    const dispatch = useDispatch();
+    const rooms = useSelector((state: RootState) => state.app.rooms);
 
-    const fetchChanel = async () => {
-        const querySnapshot = await getDocs(query(collection(db, "/rooms")));
-        const chanels: IchanelType[] = [];
-        querySnapshot.forEach((doc) => {
-            chanels.push({ id: doc.id, chanel: doc.data().name });
-            // console.log(doc.id, " => ", doc.data());
-            setChanels(chanels);
-        });
-    };
     React.useEffect(() => {
-        fetchChanel();
+        dispatch(getRoomsAsync());
     }, []);
     console.log(chanelsList);
     return (
@@ -69,13 +65,9 @@ const Navbar: React.FC = (): React.ReactElement => {
                 Icon={AddIcon}
                 addChanelOption
             />
-            {chanelsList &&
-                chanelsList.map((item) => (
-                    <NavbarList
-                        key={item.id}
-                        title={item.chanel}
-                        id={item.id}
-                    />
+            {rooms.length > 0 &&
+                rooms.map((item: any) => (
+                    <NavbarList key={item.id} title={item.room} id={item.id} />
                 ))}
         </NavbarContainer>
     );

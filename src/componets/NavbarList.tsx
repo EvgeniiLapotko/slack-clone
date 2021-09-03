@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { db } from "../firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { useCollection } from "react-firebase-hooks/firestore";
+import { addRoomsAsync, enterRoom, getRoomsAsync } from "../features/appSlice";
+import { useDispatch } from "react-redux";
 
 interface INavbarListType {
     title: string;
@@ -17,24 +19,20 @@ const NavbarList: React.FC<INavbarListType> = ({
     addChanelOption,
     id,
 }: INavbarListType): React.ReactElement => {
-    const [chanels, loading, error] = useCollection();
+    const dispatch = useDispatch();
 
     const addChanel = async () => {
         const nameChanel = prompt("Введите название канала");
         console.log(nameChanel);
         if (nameChanel) {
-            try {
-                const docRef = await addDoc(collection(db, "rooms"), {
-                    name: nameChanel,
-                });
-                console.log("Document written " + docRef.id);
-            } catch (e) {
-                console.error("Error adding document: ", e);
-            }
+            dispatch(addRoomsAsync(nameChanel));
+            dispatch(getRoomsAsync());
         }
     };
     const selectChanel = (): void => {
-        console.log(title);
+        if (id) {
+            dispatch(enterRoom({ roomId: id, roomName: title }));
+        }
     };
 
     return (
