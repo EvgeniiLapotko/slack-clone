@@ -1,9 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import { db } from "../firebase";
-import { collection, addDoc } from "firebase/firestore";
-import { useCollection } from "react-firebase-hooks/firestore";
-import { addRoomsAsync, enterRoom, getRoomsAsync } from "../features/appSlice";
+
+import {
+    addRoomsAsync,
+    enterRoom,
+    getMessagesRoomAsync,
+    getRoomsAsync,
+} from "../features/appSlice";
 import { useDispatch } from "react-redux";
 
 interface INavbarListType {
@@ -32,6 +35,7 @@ const NavbarList: React.FC<INavbarListType> = ({
     const selectChanel = (): void => {
         if (id) {
             dispatch(enterRoom({ roomId: id, roomName: title }));
+            dispatch(getMessagesRoomAsync(id));
         }
     };
 

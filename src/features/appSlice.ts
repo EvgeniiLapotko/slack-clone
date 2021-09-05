@@ -1,8 +1,13 @@
-import { addDoc, collection, getDocs, query } from "@firebase/firestore";
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { useDispatch } from "react-redux";
-import { useAppDispatch } from "../app/hooks";
-import { RootState, AppThunk } from "../app/store";
+import {
+    addDoc,
+    collection,
+    getDocs,
+    orderBy,
+    query,
+} from "@firebase/firestore";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+
+import { RootState } from "../app/store";
 import { db } from "../firebase";
 
 export interface appState {
@@ -10,6 +15,7 @@ export interface appState {
     roomName: string | null;
     status: "idle" | "loading" | "failed";
     rooms: any;
+    messages: any;
 }
 
 const initialState: appState = {
@@ -17,6 +23,7 @@ const initialState: appState = {
     roomName: null,
     status: "idle",
     rooms: [],
+    messages: [],
 };
 
 export const addRoomsAsync = createAsyncThunk(
@@ -32,15 +39,47 @@ export const addRoomsAsync = createAsyncThunk(
         }
     }
 );
+
 export const getRoomsAsync = createAsyncThunk(
     "rooms/fetchGetRooms",
     async () => {
         const querySnapshot = await getDocs(query(collection(db, "/rooms")));
         const rooms: any = [];
+
         querySnapshot.forEach((doc) => {
             rooms.push({ id: doc.id, room: doc.data().name });
         });
+
         return rooms;
+    }
+);
+export const getMessagesRoomAsync = createAsyncThunk(
+    "messages/fetchGetMessagesRoom",
+    async (id: string) => {
+        try {
+            const queryMessages = await getDocs(
+                query(
+                    collection(db, `/rooms/${id}/message`),
+                    orderBy("timestamp", "asc")
+                )
+            );
+
+            const messages: any = [];
+            queryMessages.forEach((doc) => {
+                messages.push({
+                    id: doc.id,
+                    message: doc.data().message,
+                    img: doc.data().img,
+                    name: doc.data().name,
+                    time: doc.data().timestamp.seconds,
+                });
+            });
+            messages.sort((a: any, b: any) => +a.time > +b.time);
+            console.log(messages);
+            return messages;
+        } catch (error) {
+            console.log(error);
+        }
     }
 );
 
@@ -52,8 +91,9 @@ export const appSlice = createSlice({
             state.roomId = action.payload.roomId;
             state.roomName = action.payload.roomName;
         },
-        getRooms: (state, action) => {
-            state.rooms = action.payload;
+
+        getMessagesRoom: (state, action) => {
+            state.messages = action.payload;
         },
     },
 
@@ -68,12 +108,18 @@ export const appSlice = createSlice({
             .addCase(getRoomsAsync.fulfilled, (state, action) => {
                 state.status = "idle";
                 state.rooms = action.payload;
+            })
+            .addCase(getMessagesRoomAsync.fulfilled, (state, action) => {
+                state.status = "idle";
+                state.messages = action.payload;
             });
     },
 });
 
-export const { enterRoom, getRooms } = appSlice.actions;
+export const { enterRoom, getMessagesRoom } = appSlice.actions;
 
 export const selectRoomId = (state: RootState) => state.app.roomId;
+export const selectRoomName = (state: RootState) => state.app.roomName;
+export const selectMessages = (state: RootState) => state.app.messages;
 
 export default appSlice.reducer;

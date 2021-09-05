@@ -15,26 +15,23 @@ import ArrowMoreIcon from "@material-ui/icons/ExpandMore";
 import AddIcon from "@material-ui/icons/Add";
 import NavbarList from "./NavbarList";
 
-import { collection, getDocs, query } from "firebase/firestore";
-import { db } from "../firebase";
 import { getRoomsAsync } from "../features/appSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../app/store";
 
-interface IchanelType {
-    chanel: string;
-    id: string;
-}
+// interface IchanelType {
+//     chanel: string;
+//     id: string;
+// }
 
 const Navbar: React.FC = (): React.ReactElement => {
-    const [chanelsList, setChanels] = React.useState<IchanelType[]>([]);
     const dispatch = useDispatch();
     const rooms = useSelector((state: RootState) => state.app.rooms);
 
     React.useEffect(() => {
         dispatch(getRoomsAsync());
-    }, []);
-    console.log(chanelsList);
+    }, [dispatch]);
+
     return (
         <NavbarContainer>
             <NavbarHeader>
@@ -81,6 +78,7 @@ const NavbarContainer = styled.div`
     background-color: var(--color-slack);
     color: #fff;
     border-top: 1px solid #49274b;
+
     hr {
         margin: 0 5px;
 

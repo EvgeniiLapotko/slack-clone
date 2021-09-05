@@ -3,6 +3,7 @@ import { Switch, Route } from "react-router-dom";
 import Header from "./componets/Header";
 import Navbar from "./componets/Navbar";
 import styled from "styled-components";
+import Chat from "./componets/Chat";
 
 const App: React.FC = (): React.ReactElement => {
     return (
@@ -12,7 +13,9 @@ const App: React.FC = (): React.ReactElement => {
             <AppBody>
                 <Navbar />
                 <Switch>
-                    <Route path="/" exact></Route>
+                    <Route path="/" exact>
+                        <Chat />
+                    </Route>
                 </Switch>
             </AppBody>
         </div>
