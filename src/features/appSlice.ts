@@ -16,6 +16,7 @@ export interface appState {
     status: "idle" | "loading" | "failed";
     rooms: any;
     messages: any;
+    user: any;
 }
 
 const initialState: appState = {
@@ -24,6 +25,7 @@ const initialState: appState = {
     status: "idle",
     rooms: [],
     messages: [],
+    user: {},
 };
 
 export const addRoomsAsync = createAsyncThunk(
@@ -95,6 +97,9 @@ export const appSlice = createSlice({
         getMessagesRoom: (state, action) => {
             state.messages = action.payload;
         },
+        setUser: (state, action) => {
+            state.user = action.payload;
+        },
     },
 
     extraReducers: (builder) => {
@@ -109,6 +114,9 @@ export const appSlice = createSlice({
                 state.status = "idle";
                 state.rooms = action.payload;
             })
+            .addCase(getMessagesRoomAsync.pending, (state) => {
+                state.status = "loading";
+            })
             .addCase(getMessagesRoomAsync.fulfilled, (state, action) => {
                 state.status = "idle";
                 state.messages = action.payload;
@@ -116,10 +124,12 @@ export const appSlice = createSlice({
     },
 });
 
-export const { enterRoom, getMessagesRoom } = appSlice.actions;
+export const { enterRoom, getMessagesRoom, setUser } = appSlice.actions;
 
 export const selectRoomId = (state: RootState) => state.app.roomId;
 export const selectRoomName = (state: RootState) => state.app.roomName;
 export const selectMessages = (state: RootState) => state.app.messages;
+export const selectStatus = (state: RootState) => state.app.status;
+export const selectUser = (state: RootState) => state.app.user;
 
 export default appSlice.reducer;

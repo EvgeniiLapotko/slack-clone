@@ -4,22 +4,24 @@ import React from "react";
 import styled from "styled-components";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
-import { getMessagesRoomAsync } from "../features/appSlice";
-import { useDispatch } from "react-redux";
+import { getMessagesRoomAsync, selectUser } from "../features/appSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 interface IChatInput {
     idRoom: string | null;
     room: string | null;
+    refBottom: any;
 }
 
 const ChatInput: React.FC<IChatInput> = ({
     idRoom,
     room,
+    refBottom,
 }: IChatInput): React.ReactElement => {
     const inputRef = React.useRef(null);
     const [inputValue, setInputValue] = React.useState<string>("");
     const dispatch = useDispatch();
-
+    const user = useSelector(selectUser);
     const handleChange = (e: any) => {
         setInputValue(e.target.value);
     };
@@ -33,13 +35,18 @@ const ChatInput: React.FC<IChatInput> = ({
             try {
                 await addDoc(collection(db, `rooms/${idRoom}/message`), {
                     message: inputValue,
-                    name: "Sonny",
-                    img: "https://pbs.twimg.com/profile_images/1401065718918127617/yjGtFKJ4_400x400.jpg",
+                    name: user.name,
+                    img: user.userAvatar,
                     timestamp: serverTimestamp(),
                 });
             } catch (error) {
                 console.log(error);
             }
+        }
+        if (refBottom) {
+            refBottom.current.scrollIntoView({
+                behavior: "smooth",
+            });
         }
         dispatch(getMessagesRoomAsync(idRoom));
     };

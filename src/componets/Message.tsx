@@ -44,6 +44,7 @@ const MessageImg = styled.div`
     }
 `;
 const MessageBlock = styled.div`
+    min-width: 30%;
     margin-left: 15px;
     padding: 10px;
     background-color: rgba(246, 235, 246);

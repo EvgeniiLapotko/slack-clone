@@ -32,7 +32,7 @@ const Header: React.FC = (): React.ReactElement => {
 export default Header;
 
 const HeaderContainer = styled.div`
-    position: sticky;
+    position: fixed;
     width: 100%;
     background-color: var(--color-slack);
     color: #fff;

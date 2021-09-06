@@ -78,7 +78,7 @@ const NavbarContainer = styled.div`
     background-color: var(--color-slack);
     color: #fff;
     border-top: 1px solid #49274b;
-
+    margin-top: 66px;
     hr {
         margin: 0 5px;
 

@@ -2,7 +2,7 @@ import React from "react";
 
 import StarIcon from "@material-ui/icons/StarBorder";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-
+import "../loader/loader.scss";
 import styled from "styled-components";
 import ChatInput from "./ChatInput";
 import { useSelector } from "react-redux";
@@ -10,6 +10,7 @@ import {
     selectMessages,
     selectRoomId,
     selectRoomName,
+    selectStatus,
 } from "../features/appSlice";
 import Message from "./Message";
 
@@ -17,43 +18,79 @@ const Chat: React.FC = (): React.ReactElement => {
     const roomId = useSelector(selectRoomId);
     const roomName = useSelector(selectRoomName);
     const messages = useSelector(selectMessages);
+    const status = useSelector(selectStatus);
+    const refBottom = React.useRef<HTMLDivElement>(
+        document.createElement("div")
+    );
+
+    React.useEffect(() => {
+        if (refBottom) {
+            refBottom.current.scrollIntoView({
+                behavior: "smooth",
+            });
+        }
+    }, [roomId, status]);
 
     return (
         <ChatContainer>
             {roomName ? (
-                <ChatHeader>
-                    <ChatHeaderLeft>
-                        <h4>
-                            <strong>#</strong> {roomName}
-                        </h4>
-                        <StarIcon />
-                    </ChatHeaderLeft>
-                    <ChatHeaderRight>
-                        <InfoOutlinedIcon />
-                        <p>Подробнее</p>
-                    </ChatHeaderRight>
-                </ChatHeader>
+                <>
+                    <ChatHeader>
+                        <ChatHeaderLeft>
+                            <h4>
+                                <strong>#</strong> {roomName}
+                            </h4>
+                            <StarIcon />
+                        </ChatHeaderLeft>
+                        <ChatHeaderRight>
+                            <InfoOutlinedIcon />
+                            <p>Подробнее</p>
+                        </ChatHeaderRight>
+                    </ChatHeader>
+                    {status === "idle" ? (
+                        <ChatMessagesWrapper>
+                            <ChatMessages>
+                                <>
+                                    {messages
+                                        ? messages.map((item: any) => (
+                                              <Message
+                                                  key={item.id}
+                                                  messageProps={item.message}
+                                                  time={item.time}
+                                                  user={item.name}
+                                                  userImg={item.img}
+                                              />
+                                          ))
+                                        : false}
+                                </>
+                            </ChatMessages>
+                        </ChatMessagesWrapper>
+                    ) : (
+                        <ChatMessagesLoader>
+                            <div className="lds-grid">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                        </ChatMessagesLoader>
+                    )}
+
+                    <ChatInput
+                        idRoom={roomId}
+                        room={roomName}
+                        refBottom={refBottom}
+                    />
+                </>
             ) : (
                 false
             )}
-
-            <ChatMessages>
-                <>
-                    {messages
-                        ? messages.map((item: any) => (
-                              <Message
-                                  key={item.id}
-                                  messageProps={item.message}
-                                  time={item.time}
-                                  user={item.name}
-                                  userImg={item.img}
-                              />
-                          ))
-                        : false}
-                </>
-            </ChatMessages>
-
-            <ChatInput idRoom={roomId} room={roomName} />
+            <ChatMessagesBottom ref={refBottom}></ChatMessagesBottom>
         </ChatContainer>
     );
 };
@@ -63,8 +100,9 @@ export default Chat;
 const ChatContainer = styled.div`
     flex: 0.7;
     flex-grow: 1;
-    overflow-y: auto;
+    overflow: auto;
     margin-bottom: 150px;
+    margin-top: 66px;
 `;
 const ChatHeader = styled.div`
     display: flex;
@@ -109,4 +147,13 @@ const ChatHeaderRight = styled.div`
     }
 `;
 
+const ChatMessagesWrapper = styled.div``;
 const ChatMessages = styled.div``;
+const ChatMessagesBottom = styled.div``;
+const ChatMessagesLoader = styled.div`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
