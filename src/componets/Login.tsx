@@ -1,22 +1,38 @@
-import { signInWithPopup, signInWithRedirect } from "@firebase/auth";
+import { signInWithPopup } from "@firebase/auth";
 import { Button } from "@material-ui/core";
 import React from "react";
+import { useDispatch } from "react-redux";
 
 import styled from "styled-components";
 import slackIcon from "../assets/img/icon_slack.png";
+import { setUser } from "../features/appSlice";
 import { auth, provider } from "../firebase";
 
 function Login() {
+    const dispatch = useDispatch();
+    const user = auth.currentUser;
+    console.log(user);
     const signIn = (e: React.SyntheticEvent) => {
         e.preventDefault();
         signInWithPopup(auth, provider);
+
+        if (user) {
+            dispatch(
+                setUser({
+                    name: user.displayName,
+                    userAvatar: user.photoURL,
+                })
+            );
+        }
     };
+
     return (
         <LoginContainer>
             <LoginInner>
                 <LoginItemImg>
                     <img src={slackIcon} alt="icon-slack" />
                     <h1>Sign In</h1>
+
                     <Button
                         color="primary"
                         variant="contained"

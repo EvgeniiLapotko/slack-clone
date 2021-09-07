@@ -2,7 +2,7 @@ import React from "react";
 
 import StarIcon from "@material-ui/icons/StarBorder";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
-import "../loader/loader.scss";
+
 import styled from "styled-components";
 import ChatInput from "./ChatInput";
 import { useSelector } from "react-redux";
@@ -47,39 +47,24 @@ const Chat: React.FC = (): React.ReactElement => {
                             <p>Подробнее</p>
                         </ChatHeaderRight>
                     </ChatHeader>
-                    {status === "idle" ? (
-                        <ChatMessagesWrapper>
-                            <ChatMessages>
-                                <>
-                                    {messages
-                                        ? messages.map((item: any) => (
-                                              <Message
-                                                  key={item.id}
-                                                  messageProps={item.message}
-                                                  time={item.time}
-                                                  user={item.name}
-                                                  userImg={item.img}
-                                              />
-                                          ))
-                                        : false}
-                                </>
-                            </ChatMessages>
-                        </ChatMessagesWrapper>
-                    ) : (
-                        <ChatMessagesLoader>
-                            <div className="lds-grid">
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                            </div>
-                        </ChatMessagesLoader>
-                    )}
+
+                    <ChatMessagesWrapper>
+                        <ChatMessages>
+                            <>
+                                {messages
+                                    ? messages.map((item: any) => (
+                                          <Message
+                                              key={item.id}
+                                              messageProps={item.message}
+                                              time={item.time}
+                                              user={item.name}
+                                              userImg={item.img}
+                                          />
+                                      ))
+                                    : false}
+                            </>
+                        </ChatMessages>
+                    </ChatMessagesWrapper>
 
                     <ChatInput
                         idRoom={roomId}
@@ -150,10 +135,3 @@ const ChatHeaderRight = styled.div`
 const ChatMessagesWrapper = styled.div``;
 const ChatMessages = styled.div``;
 const ChatMessagesBottom = styled.div``;
-const ChatMessagesLoader = styled.div`
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-`;

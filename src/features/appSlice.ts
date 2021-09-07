@@ -25,7 +25,7 @@ const initialState: appState = {
     status: "idle",
     rooms: [],
     messages: [],
-    user: {},
+    user: null,
 };
 
 export const addRoomsAsync = createAsyncThunk(
