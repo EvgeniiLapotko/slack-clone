@@ -3,15 +3,44 @@ import styled from "styled-components";
 
 import TimeIcon from "@material-ui/icons/QueryBuilder";
 import SearchIcon from "@material-ui/icons/Search";
-import HelpIcon from "@material-ui/icons/HelpOutline";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
 import { Avatar } from "@material-ui/core";
+import { useSelector } from "react-redux";
+import { selectUser } from "../features/appSlice";
+import { auth } from "../firebase";
+import { deleteUser } from "firebase/auth";
 
-const Header: React.FC = (): React.ReactElement => {
+interface IHeaderType {
+    openMenu: () => void;
+}
+
+const Header: React.FC<IHeaderType> = ({
+    openMenu,
+}: IHeaderType): React.ReactElement => {
+    const user = useSelector(selectUser);
+    const toExit = () => {
+        const userCurr = auth.currentUser;
+        console.log(userCurr);
+
+        if (userCurr) {
+            deleteUser(userCurr)
+                .then(() => {
+                    console.log("delete");
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+    };
+
     return (
         <HeaderContainer>
             <HeaderUser>
-                <HeaderAvatar></HeaderAvatar>
+                <HeaderAvatar
+                    onClick={openMenu}
+                    src={user?.userAvatar}
+                ></HeaderAvatar>
                 <HeaderIcon>
                     <TimeIcon />
                 </HeaderIcon>
@@ -22,7 +51,7 @@ const Header: React.FC = (): React.ReactElement => {
             </HeaderSearh>
             <HeaderHelp>
                 <HeaderHelpIcon>
-                    <HelpIcon />
+                    <ExitToAppIcon onClick={toExit} />
                 </HeaderHelpIcon>
             </HeaderHelp>
         </HeaderContainer>
@@ -40,6 +69,7 @@ const HeaderContainer = styled.div`
     align-items: center;
     padding: 13px;
     justify-content: space-between;
+    z-index: 99;
 `;
 const HeaderUser = styled.div`
     display: flex;
@@ -54,6 +84,9 @@ const HeaderAvatar = styled(Avatar)`
 `;
 const HeaderIcon = styled.div`
     margin-left: auto;
+    @media (max-width: 580px) {
+        display: none;
+    }
 `;
 const HeaderSearh = styled.div`
     flex: 0.4;
@@ -63,6 +96,10 @@ const HeaderSearh = styled.div`
     background-color: #411f44;
     border: 1px solid gray;
     border-radius: 5px;
+    @media (max-width: 580px) {
+        max-width: 200px;
+        padding: 5px 10px;
+    }
 
     input {
         background-color: transparent;

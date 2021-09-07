@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 interface ImessageType {
     messageProps: string;
-    time: any;
+    time: number;
     user: string;
     userImg: string;
 }

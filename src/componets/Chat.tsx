@@ -11,6 +11,7 @@ import {
     selectRoomId,
     selectRoomName,
     selectStatus,
+    Imessage,
 } from "../features/appSlice";
 import Message from "./Message";
 
@@ -52,7 +53,7 @@ const Chat: React.FC = (): React.ReactElement => {
                         <ChatMessages>
                             <>
                                 {messages
-                                    ? messages.map((item: any) => (
+                                    ? messages.map((item: Imessage) => (
                                           <Message
                                               key={item.id}
                                               messageProps={item.message}
@@ -88,6 +89,9 @@ const ChatContainer = styled.div`
     overflow: auto;
     margin-bottom: 150px;
     margin-top: 66px;
+    @media (max-width: 580px) {
+        flex: 1;
+    }
 `;
 const ChatHeader = styled.div`
     display: flex;

@@ -21,6 +21,7 @@ function Login() {
                 setUser({
                     name: user.displayName,
                     userAvatar: user.photoURL,
+                    nikName: "Anonimys",
                 })
             );
         }
@@ -57,7 +58,7 @@ const LoginContainer = styled.div`
 `;
 const LoginInner = styled.div`
     background-color: #fff;
-    padding: 100px;
+    padding: 50px;
     border-radius: 15px;
     min-width: 30%;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);

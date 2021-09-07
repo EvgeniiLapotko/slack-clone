@@ -33,12 +33,14 @@ const ChatInput: React.FC<IChatInput> = ({
             return false;
         } else {
             try {
-                await addDoc(collection(db, `rooms/${idRoom}/message`), {
-                    message: inputValue,
-                    name: user.name,
-                    img: user.userAvatar,
-                    timestamp: serverTimestamp(),
-                });
+                if (user) {
+                    await addDoc(collection(db, `rooms/${idRoom}/message`), {
+                        message: inputValue,
+                        name: user.name,
+                        img: user.userAvatar,
+                        timestamp: serverTimestamp(),
+                    });
+                }
             } catch (error) {
                 console.log(error);
             }
@@ -82,6 +84,9 @@ const ChatInputContainer = styled.div`
             border: 1px solid gray;
             padding: 20px;
             outline: none;
+            @media (max-width: 580px) {
+                width: 90%;
+            }
         }
         button {
             display: none;

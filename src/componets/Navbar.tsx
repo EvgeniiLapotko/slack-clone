@@ -15,32 +15,41 @@ import ArrowMoreIcon from "@material-ui/icons/ExpandMore";
 import AddIcon from "@material-ui/icons/Add";
 import NavbarList from "./NavbarList";
 
-import { getRoomsAsync } from "../features/appSlice";
+import { getRoomsAsync, selectUser, Iroom } from "../features/appSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../app/store";
 
-// interface IchanelType {
-//     chanel: string;
-//     id: string;
-// }
+interface INavbarType {
+    menu: boolean;
+}
 
-const Navbar: React.FC = (): React.ReactElement => {
+const Navbar: React.FC<INavbarType> = ({
+    menu,
+}: INavbarType): React.ReactElement => {
     const dispatch = useDispatch();
     const rooms = useSelector((state: RootState) => state.app.rooms);
+    const user = useSelector(selectUser);
 
     React.useEffect(() => {
         dispatch(getRoomsAsync());
     }, [dispatch]);
+    React.useEffect(() => {
+        console.log(menu);
+    }, [menu]);
 
     return (
-        <NavbarContainer>
+        <NavbarContainer menuStyle={menu}>
             <NavbarHeader>
                 <NavbarInfo>
-                    <h2>NickName</h2>
-                    <h3>
-                        <FiberIcon />
-                        John Doo
-                    </h3>
+                    {user && (
+                        <>
+                            <h2>{user.name}</h2>
+                            <h3>
+                                <FiberIcon />
+                                {user.nikName}
+                            </h3>
+                        </>
+                    )}
                 </NavbarInfo>
                 <NavbarHeaderIcon>
                     <CreateIcon />
@@ -63,7 +72,7 @@ const Navbar: React.FC = (): React.ReactElement => {
                 addChanelOption
             />
             {rooms.length > 0 &&
-                rooms.map((item: any) => (
+                rooms.map((item: Iroom) => (
                     <NavbarList key={item.id} title={item.room} id={item.id} />
                 ))}
         </NavbarContainer>
@@ -73,17 +82,30 @@ const Navbar: React.FC = (): React.ReactElement => {
 export default Navbar;
 
 const NavbarContainer = styled.div`
-    flex: 0.3;
-    max-width: 280px;
+    flex: 0.35;
+    max-width: 300px;
+    min-width: 230px;
     background-color: var(--color-slack);
     color: #fff;
     border-top: 1px solid #49274b;
     margin-top: 66px;
+    transition: all 0.4s;
     hr {
         margin: 0 5px;
 
         opacity: 0.3;
         border-color: #49274b;
+    }
+    @media (max-width: 580px) {
+        position: fixed;
+        max-width: 300px;
+        height: 100%;
+        margin-top: 0;
+        top: 66px;
+        left: 0;
+        z-index: 90;
+        transform: ${({ menuStyle }: { menuStyle: boolean }) =>
+            menuStyle ? "translateX(0)" : "translateX(-100%)"};
     }
 `;
 
@@ -97,8 +119,12 @@ const NavbarHeader = styled.div`
 const NavbarInfo = styled.div`
     h2 {
         margin: 0;
+        margin-right: 5px;
         font-size: 15px;
         letter-spacing: 1px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 100%;
     }
     h3 {
         margin: 0;

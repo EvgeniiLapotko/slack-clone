@@ -10,13 +10,30 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../app/store";
 import { db } from "../firebase";
 
+export interface Iroom {
+    id: string;
+    room: string;
+}
+export interface Imessage {
+    id: string;
+    message: string;
+    img: string;
+    name: string;
+    time: number;
+}
+export interface IUser {
+    name: string;
+    userAvatar: string;
+    nikName: string;
+}
+
 export interface appState {
     roomId: string | null;
     roomName: string | null;
     status: "idle" | "loading" | "failed";
-    rooms: any;
-    messages: any;
-    user: any;
+    rooms: Iroom[];
+    messages: Imessage[];
+    user: IUser | null;
 }
 
 const initialState: appState = {
@@ -76,8 +93,7 @@ export const getMessagesRoomAsync = createAsyncThunk(
                     time: doc.data().timestamp.seconds,
                 });
             });
-            messages.sort((a: any, b: any) => +a.time > +b.time);
-            console.log(messages);
+
             return messages;
         } catch (error) {
             console.log(error);
